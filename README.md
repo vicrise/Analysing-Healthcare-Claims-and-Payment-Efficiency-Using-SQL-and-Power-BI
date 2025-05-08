@@ -24,9 +24,14 @@ This project addresses the challenge of integrating disparate datasets and deliv
 -	I removed the phone number column because it is not necessary for my analysis 
 -	I imported the database into Power BI for visualisation
 ### DATA ANALYSIS USING SQL
-
+- [SQL QUERY](https://github.com/vicrise/Analysing-Healthcare-Claims-and-Payment-Efficiency-Using-SQL-and-Power-BI/blob/main/HOSPITAL%20CLAIM%20SCRIPT.sql)
 ### DATA ANALYSIS USING POWER BI
-
+- DAX FUNCTION
+- Claim Approval Rate (%) = 
+- DIVIDE(
+    [Total Approved Claims],
+    [Total Claims],0)
+- Total Claims = COUNTROWS(Claims)
 ### KEY INSIGHTS
 -  The Claim Approval Rate is around 70.28%, which is relatively good, but it needs improvement. The Rejection Rate is nearly 20% and 1%, suggesting potential issues with claim quality or documentation.
 - $3.39bn in Total Payouts indicates high financial throughput.
@@ -40,6 +45,9 @@ and October, which vary across different years
 - The monthly payment pattern varies across different years, with peaks in March and July.
 - Young adults and middle-aged patients generate the most claims, and females account for a higher proportion of claims.
 - A visible positive correlation between claim count and payment amount.
+- [DASHBOARD 1](https://github.com/vicrise/Analysing-Healthcare-Claims-and-Payment-Efficiency-Using-SQL-and-Power-BI/blob/main/Screenshot%20(160).png)
+- [DASHBOARD 2](https://github.com/vicrise/Analysing-Healthcare-Claims-and-Payment-Efficiency-Using-SQL-and-Power-BI/blob/main/Screenshot%20(161).png)
+- [DASHBOARD 3](https://github.com/vicrise/Analysing-Healthcare-Claims-and-Payment-Efficiency-Using-SQL-and-Power-BI/blob/main/Screenshot%20(162).png)
 ### RECOMMENDATION
 - Audit rejected claims to identify root causes (e.g., incomplete submissions, provider errors).
 - Improve patient education or provider training to reduce rejection rates.
@@ -50,6 +58,8 @@ and October, which vary across different years
 - Customise healthcare services by gender to optimise satisfaction and outcomes.
 
  - [INTERACTIVE DASHBOARD](https://app.powerbi.com/groups/me/reports/c10a7a51-bb33-444e-bf12-de90568a5f27/fb729d1c2025ea5d5208?experience=power-bi)
+### CONCLUSION
+- The dashboard supports data-driven decisions for cost control, provider optimization, and targeted patient care—making it a powerful tool for strategic healthcare management.
 
 
 
