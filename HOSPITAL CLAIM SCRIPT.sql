@@ -1,0 +1,95 @@
+--1. The overall claim approval rate across all providers and patients
+
+SELECT 
+    COUNT(*) AS total_claims,
+    SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) AS approved_claims,
+    ROUND(SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS approval_rate
+FROM claims;
+
+
+--2. top 20 providers that have the highest  approval rates
+
+SELECT TOP 20
+    pr.provider_id,
+    pr.name,
+    COUNT(*) AS total_claims,
+    SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) AS approved_claims,
+    ROUND(SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS approval_rate
+FROM claims c
+JOIN providers pr ON c.provider_id = pr.provider_id
+GROUP BY pr.provider_id, pr.name
+ORDER BY approval_rate DESC;
+
+--3. top 10 patient demographics that are associated with the highest claim amounts or frequencies
+
+SELECT TOP 10
+    pa.age,
+    pa.gender,
+    COUNT(c.claim_id) AS claim_count,
+    SUM(c.claim_amount) AS total_claim_amount
+FROM claims c
+JOIN patients pa ON c.patient_id = pa.patient_id
+GROUP BY pa.age, pa.gender
+ORDER BY total_claim_amount DESC;
+
+
+--4  is there any seasonal or monthly patterns in claims and payments
+--in claims 
+SELECT 
+    month(claim_date) AS claim_month,
+    COUNT(claim_id) AS claim_count,
+    SUM(claim_amount) AS total_claim_amount
+FROM claims
+GROUP BY  month(claim_date)
+ORDER BY  month(claim_date);
+ 
+ SELECT 
+    month(payment_date) AS payment_month,
+    SUM(payment_amount) AS total_payment
+FROM payments
+GROUP BY month(payment_date)
+ORDER BY month(payment_date);
+
+
+--5. What is the recovery rate (payment vs. claim amount)
+
+SELECT 
+    pr.provider_id,
+    pr.name,
+    SUM(p.payment_amount) AS total_payment,
+    SUM(c.claim_amount) AS total_claims,
+    ROUND(SUM(p.payment_amount) * 100.0 / NULLIF(SUM(c.claim_amount), 0), 2) AS recovery_rate
+FROM claims c
+JOIN payments p ON c.claim_id = p.claim_id
+JOIN providers pr ON c.provider_id = pr.provider_id
+GROUP BY pr.provider_id, pr.name
+ORDER BY recovery_rate DESC;
+
+
+
+--7.	Who are the top 10 most frequent claimants?
+SELECT top 10
+    c.patient_id,
+    CONCAT(pa.first_name, ' ', pa.last_name) AS full_name,
+    COUNT(*) AS claim_count,
+    SUM(c.claim_amount) AS total_claim_amount
+FROM claims c
+JOIN patients pa ON c.patient_id = pa.patient_id
+GROUP BY c.patient_id, CONCAT(pa.first_name, ' ', pa.last_name)
+ORDER BY claim_count DESC;
+
+
+
+
+--9. Is there a correlation between claim amount and approval likelihood?
+SELECT 
+    ROUND(c.claim_amount, -2) AS claim_amount_bucket,
+    COUNT(*) AS total_claims,
+    SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) AS approved,
+    ROUND(SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS approval_rate
+FROM claims c
+GROUP BY ROUND(c.claim_amount, -2)
+ORDER BY ROUND(c.claim_amount, -2);
+
+
+
