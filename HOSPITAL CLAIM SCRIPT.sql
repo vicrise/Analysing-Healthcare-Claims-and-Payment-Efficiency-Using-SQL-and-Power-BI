@@ -7,7 +7,7 @@ SELECT
 FROM claims;
 
 
---2. top 20 providers that have the highest  approval rates
+--2. The top 20 providers that have the highest  approval rates
 
 SELECT TOP 20
     pr.provider_id,
@@ -20,7 +20,7 @@ JOIN providers pr ON c.provider_id = pr.provider_id
 GROUP BY pr.provider_id, pr.name
 ORDER BY approval_rate DESC;
 
---3. top 10 patient demographics that are associated with the highest claim amounts or frequencies
+--3. The top 10 patient demographics that are associated with the highest claim amounts or frequencies
 
 SELECT TOP 10
     pa.age,
@@ -33,7 +33,7 @@ GROUP BY pa.age, pa.gender
 ORDER BY total_claim_amount DESC;
 
 
---4  is there any seasonal or monthly patterns in claims and payments
+--4  Is there any seasonal or monthly patterns in claims and payments
 --in claims 
 SELECT 
     month(claim_date) AS claim_month,
@@ -70,7 +70,6 @@ ORDER BY recovery_rate DESC;
 --7.	Who are the top 10 most frequent claimants?
 SELECT top 10
     c.patient_id,
-    CONCAT(pa.first_name, ' ', pa.last_name) AS full_name,
     COUNT(*) AS claim_count,
     SUM(c.claim_amount) AS total_claim_amount
 FROM claims c
