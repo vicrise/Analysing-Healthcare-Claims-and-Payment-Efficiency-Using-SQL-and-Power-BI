@@ -1,4 +1,4 @@
-# Analysing-Healthcare-Claims-and-Payment-Efficiency-Using-SQL-and-Power-BI
+# Healthcare Insurance Analytics Using Power BI & SQL
 ### PROJECT OVERVIEW
 This project focuses on analysing healthcare claims and payment patterns by integrating and evaluating data from patients, providers, claims, and payment systems.
  Using SQL for data extraction and transformation, and Power BI for visualisation, the goal is to uncover trends in claim approval rates, provider efficiency, patient demographics, and payment recovery performance.
