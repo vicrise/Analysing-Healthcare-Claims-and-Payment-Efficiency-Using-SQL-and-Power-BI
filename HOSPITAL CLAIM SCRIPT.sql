@@ -9,28 +9,49 @@ FROM claims;
 
 --2. The top 20 providers that have the highest  approval rates
 
-SELECT TOP 20
-    pr.provider_id,
-    pr.name,
-    COUNT(*) AS total_claims,
-    SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) AS approved_claims,
-    ROUND(SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS approval_rate
-FROM claims c
-JOIN providers pr ON c.provider_id = pr.provider_id
-GROUP BY pr.provider_id, pr.name
-ORDER BY approval_rate DESC;
+SELECT 
+    provider_id,
+    name,
+    total_claims,
+    approved_claims,
+    ROUND(approved_claims * 100.0 / total_claims, 2) AS approval_rate
+FROM (
+    SELECT 
+        pr.provider_id,
+        pr.name,
+        COUNT(*) AS total_claims,
+        SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) AS approved_claims
+    FROM claims c
+    JOIN providers pr 
+        ON c.provider_id = pr.provider_id
+    GROUP BY pr.provider_id, pr.name
+) AS ProviderSummary
+ORDER BY approval_rate DESC
+LIMIT 20;
+
 
 --3. The top 10 patient demographics that are associated with the highest claim amounts or frequencies
 
-SELECT TOP 10
-    pa.age,
-    pa.gender,
-    COUNT(c.claim_id) AS claim_count,
-    SUM(c.claim_amount) AS total_claim_amount
-FROM claims c
-JOIN patients pa ON c.patient_id = pa.patient_id
-GROUP BY pa.age, pa.gender
-ORDER BY total_claim_amount DESC;
+WITH PatientClaims AS (
+    SELECT 
+        pa.age,
+        pa.gender,
+        COUNT(c.claim_id) AS claim_count,
+        SUM(c.claim_amount) AS total_claim_amount
+    FROM claims c
+    JOIN patients pa 
+        ON c.patient_id = pa.patient_id
+    GROUP BY pa.age, pa.gender
+)
+SELECT 
+    age,
+    gender,
+    claim_count,
+    total_claim_amount
+FROM PatientClaims
+ORDER BY total_claim_amount DESC
+LIMIT 10;
+
 
 
 --4  Is there any seasonal or monthly patterns in claims and payments
@@ -81,14 +102,22 @@ ORDER BY claim_count DESC;
 
 
 --9. Is there a correlation between claim amount and approval likelihood?
+WITH ClaimBuckets AS (
+    SELECT 
+        ROUND(c.claim_amount, -2) AS claim_amount_bucket,
+        COUNT(*) AS total_claims,
+        SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) AS approved
+    FROM claims c
+    GROUP BY ROUND(c.claim_amount, -2)
+)
 SELECT 
-    ROUND(c.claim_amount, -2) AS claim_amount_bucket,
-    COUNT(*) AS total_claims,
-    SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) AS approved,
-    ROUND(SUM(CASE WHEN c.status = 'Approved' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS approval_rate
-FROM claims c
-GROUP BY ROUND(c.claim_amount, -2)
-ORDER BY ROUND(c.claim_amount, -2);
+    claim_amount_bucket,
+    total_claims,
+    approved,
+    ROUND(approved * 100.0 / total_claims, 2) AS approval_rate
+FROM ClaimBuckets
+ORDER BY claim_amount_bucket;
+
 
 
 
